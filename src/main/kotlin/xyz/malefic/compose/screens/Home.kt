@@ -11,7 +11,6 @@ import androidx.compose.ui.unit.dp
 import moe.tlaster.precompose.navigation.Navigator
 import xyz.malefic.compose.comps.box.BackgroundBox
 import xyz.malefic.compose.comps.text.typography.Heading1
-import xyz.malefic.compose.comps.text.typography.Heading2
 import xyz.malefic.compose.engine.factory.ButtonFactory
 import xyz.malefic.compose.engine.factory.ColumnFactory
 import xyz.malefic.compose.engine.factory.TextFactory

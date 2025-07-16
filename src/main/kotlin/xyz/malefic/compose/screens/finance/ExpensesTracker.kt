@@ -1,16 +1,12 @@
 package xyz.malefic.compose.screens.finance
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,35 +32,38 @@ import xyz.malefic.compose.engine.fuel.space
 @Composable
 fun ExpensesTracker(navi: Navigator) {
     // Sample expense data for Orange County residents
-    val expenses = remember {
-        listOf(
-            Expense("Rent/Mortgage", 2100.00, "Housing"),
-            Expense("Groceries", 450.75, "Food"),
-            Expense("Dining Out", 320.50, "Food"),
-            Expense("Gas", 180.25, "Transportation"),
-            Expense("Toll Roads (73, 241, 261)", 85.00, "Transportation"),
-            Expense("Utilities", 195.00, "Housing"),
-            Expense("Internet", 75.00, "Utilities"),
-            Expense("Cell Phone", 95.00, "Utilities"),
-            Expense("Disneyland Annual Pass", 50.00, "Entertainment"),
-            Expense("Beach Parking", 25.00, "Recreation"),
-            Expense("Gym Membership", 45.00, "Health"),
-            Expense("Health Insurance", 350.00, "Health")
-        )
-    }
-    
+    val expenses =
+        remember {
+            listOf(
+                Expense("Rent/Mortgage", 2100.00, "Housing"),
+                Expense("Groceries", 450.75, "Food"),
+                Expense("Dining Out", 320.50, "Food"),
+                Expense("Gas", 180.25, "Transportation"),
+                Expense("Toll Roads (73, 241, 261)", 85.00, "Transportation"),
+                Expense("Utilities", 195.00, "Housing"),
+                Expense("Internet", 75.00, "Utilities"),
+                Expense("Cell Phone", 95.00, "Utilities"),
+                Expense("Disneyland Annual Pass", 50.00, "Entertainment"),
+                Expense("Beach Parking", 25.00, "Recreation"),
+                Expense("Gym Membership", 45.00, "Health"),
+                Expense("Health Insurance", 350.00, "Health"),
+            )
+        }
+
     // Calculate totals by category
-    val categoryTotals = expenses.groupBy { it.category }
-        .mapValues { (_, expenses) -> expenses.sumOf { it.amount } }
-    
+    val categoryTotals =
+        expenses
+            .groupBy { it.category }
+            .mapValues { (_, expenses) -> expenses.sumOf { it.amount } }
+
     val scrollState = rememberScrollState()
-    
+
     BackgroundBox(contentAlignment = Alignment.TopCenter) {
         ColumnFactory {
             // Header
             Heading1("Expense Tracker")
             Heading2("Track your Orange County expenses")
-            
+
             // Category summary
             ColumnFactory {
                 Heading2("Expense Categories")
@@ -80,7 +79,7 @@ fun ExpensesTracker(navi: Navigator) {
             } /= {
                 modifier = Modifier.fillMaxWidth().padding(16.dp)
             }
-            
+
             // Expense list
             ColumnFactory {
                 Heading2("Recent Expenses")
@@ -99,24 +98,25 @@ fun ExpensesTracker(navi: Navigator) {
                     }
                 }
             } /= {
-                modifier = Modifier.fillMaxWidth()
-                    .padding(16.dp)
-                    .verticalScroll(scrollState)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .verticalScroll(scrollState)
             }
-            
+
             // Navigation buttons
             ButtonFactory { TextFactory("Add New Expense")() } / {
                 onClick = { /* Would implement add expense functionality */ }
             } *= {
                 space(16.dp)
             }
-            
+
             ButtonFactory { TextFactory("Back to Dashboard")() } / {
                 onClick = { navi.navigate("finance/dashboard") }
             } *= {
                 space(16.dp)
             }
-            
         } /= {
             horizontalAlignment = Alignment.CenterHorizontally
             verticalArrangement = Arrangement.Top
@@ -131,5 +131,5 @@ fun ExpensesTracker(navi: Navigator) {
 data class Expense(
     val description: String,
     val amount: Double,
-    val category: String
+    val category: String,
 )

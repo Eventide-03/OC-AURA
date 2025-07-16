@@ -29,17 +29,17 @@ import xyz.malefic.compose.engine.fuel.space
 @Composable
 fun TaxInformation(navi: Navigator) {
     val scrollState = rememberScrollState()
-    
+
     BackgroundBox(contentAlignment = Alignment.TopCenter) {
         ColumnFactory {
             // Header
             Heading1("Orange County Tax Information")
             Heading2("Tax rates and information for OC residents")
-            
+
             // California State Income Tax
             ColumnFactory {
                 Heading2("California State Income Tax Rates (2023)")
-                
+
                 TaxBracketRow("$0 - $10,099", "1%")
                 TaxBracketRow("$10,100 - $23,942", "2%")
                 TaxBracketRow("$23,943 - $37,788", "4%")
@@ -49,18 +49,20 @@ fun TaxInformation(navi: Navigator) {
                 TaxBracketRow("$338,640 - $406,364", "10.3%")
                 TaxBracketRow("$406,365 - $677,275", "11.3%")
                 TaxBracketRow("$677,276+", "12.3%")
-                
+
                 TextFactory("Note: These are marginal tax rates. Each rate applies only to income within that bracket.")()
             } /= {
                 modifier = Modifier.fillMaxWidth().padding(16.dp)
             }
-            
+
             // Property Tax
             ColumnFactory {
                 Heading2("Orange County Property Tax")
-                
-                TextFactory("The basic property tax rate in Orange County is 1% of assessed value, plus additional voter-approved local taxes.")()
-                
+
+                TextFactory(
+                    "The basic property tax rate in Orange County is 1% of assessed value, plus additional voter-approved local taxes.",
+                )()
+
                 RowFactory {
                     TextFactory("Average Effective Property Tax Rate")()
                     TextFactory("0.74%")()
@@ -68,18 +70,18 @@ fun TaxInformation(navi: Navigator) {
                     modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
                     horizontalArrangement = Arrangement.SpaceBetween
                 }
-                
+
                 TextFactory("Property taxes in Orange County are due in two installments:")()
                 TextFactory("• First Installment: November 1 (delinquent after December 10)")()
                 TextFactory("• Second Installment: February 1 (delinquent after April 10)")()
             } /= {
                 modifier = Modifier.fillMaxWidth().padding(16.dp)
             }
-            
+
             // Sales Tax
             ColumnFactory {
                 Heading2("Orange County Sales Tax")
-                
+
                 RowFactory {
                     TextFactory("California State Base Sales Tax")()
                     TextFactory("7.25%")()
@@ -87,9 +89,9 @@ fun TaxInformation(navi: Navigator) {
                     modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
                     horizontalArrangement = Arrangement.SpaceBetween
                 }
-                
+
                 TextFactory("Additional local sales taxes by city:")()
-                
+
                 SalesTaxRow("Anaheim", "7.75%")
                 SalesTaxRow("Costa Mesa", "7.75%")
                 SalesTaxRow("Irvine", "7.75%")
@@ -101,28 +103,29 @@ fun TaxInformation(navi: Navigator) {
             } /= {
                 modifier = Modifier.fillMaxWidth().padding(16.dp)
             }
-            
+
             // Tax Resources
             ColumnFactory {
                 Heading2("Orange County Tax Resources")
-                
+
                 TextFactory("• Orange County Treasurer-Tax Collector: ttc.ocgov.com")()
                 TextFactory("• Orange County Assessor: ocgov.com/gov/assessor")()
                 TextFactory("• California Franchise Tax Board: ftb.ca.gov")()
                 TextFactory("• California Department of Tax and Fee Administration: cdtfa.ca.gov")()
             } /= {
-                modifier = Modifier.fillMaxWidth()
-                    .padding(16.dp)
-                    .verticalScroll(scrollState)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .verticalScroll(scrollState)
             }
-            
+
             // Navigation button
             ButtonFactory { TextFactory("Back to Dashboard")() } / {
                 onClick = { navi.navigate("finance/dashboard") }
             } *= {
                 space(16.dp)
             }
-            
         } /= {
             horizontalAlignment = Alignment.CenterHorizontally
             verticalArrangement = Arrangement.Top
@@ -135,7 +138,10 @@ fun TaxInformation(navi: Navigator) {
  * Helper composable for displaying tax bracket information
  */
 @Composable
-private fun TaxBracketRow(incomeRange: String, rate: String) {
+private fun TaxBracketRow(
+    incomeRange: String,
+    rate: String,
+) {
     RowFactory {
         TextFactory(incomeRange)()
         TextFactory(rate)()
@@ -149,7 +155,10 @@ private fun TaxBracketRow(incomeRange: String, rate: String) {
  * Helper composable for displaying sales tax information
  */
 @Composable
-private fun SalesTaxRow(city: String, rate: String) {
+private fun SalesTaxRow(
+    city: String,
+    rate: String,
+) {
     RowFactory {
         TextFactory(city)()
         TextFactory(rate)()

@@ -21,13 +21,13 @@ import xyz.malefic.compose.nav.RouteManager.RoutedSidebar
 import xyz.malefic.compose.nav.RouteManager.navi
 import xyz.malefic.compose.nav.config.MalefiConfigLoader
 import xyz.malefic.compose.screens.App1
+import xyz.malefic.compose.screens.GoalTracker
 import xyz.malefic.compose.screens.Home
 import xyz.malefic.compose.screens.finance.BudgetManager
 import xyz.malefic.compose.screens.finance.ExpensesTracker
 import xyz.malefic.compose.screens.finance.FinanceDashboard
 import xyz.malefic.compose.screens.finance.IncomeTracker
 import xyz.malefic.compose.screens.finance.TaxInformation
-import xyz.malefic.compose.screens.GoalTracker
 import xyz.malefic.compose.theming.MaleficTheme
 import xyz.malefic.ext.list.get
 import xyz.malefic.ext.stream.grass

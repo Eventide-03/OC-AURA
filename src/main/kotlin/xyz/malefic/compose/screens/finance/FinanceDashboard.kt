@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,7 +33,7 @@ fun FinanceDashboard(navi: Navigator) {
             // Header
             Heading1("Orange County Budget Tracker")
             Heading2("Manage your finances with ease")
-            
+
             // Quick summary section
             RowFactory {
                 SummaryCard("Budget", "$5,000.00")
@@ -45,32 +43,31 @@ fun FinanceDashboard(navi: Navigator) {
                 modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
                 horizontalArrangement = Arrangement.SpaceEvenly
             }
-            
+
             // Navigation buttons
             ButtonFactory { TextFactory("Track Expenses")() } / {
                 onClick = { navi.navigate("finance/expenses") }
             } *= {
                 space(16.dp)
             }
-            
+
             ButtonFactory { TextFactory("Manage Budget")() } / {
                 onClick = { navi.navigate("finance/budget") }
             } *= {
                 space(16.dp)
             }
-            
+
             ButtonFactory { TextFactory("OC Tax Information")() } / {
                 onClick = { navi.navigate("finance/taxes") }
             } *= {
                 space(16.dp)
             }
-            
+
             ButtonFactory { TextFactory("Income Tracker")() } / {
                 onClick = { navi.navigate("finance/income") }
             } *= {
                 space(16.dp)
             }
-            
         } /= {
             horizontalAlignment = Alignment.CenterHorizontally
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -82,7 +79,10 @@ fun FinanceDashboard(navi: Navigator) {
  * Card component to display summary information
  */
 @Composable
-private fun SummaryCard(title: String, amount: String) {
+private fun SummaryCard(
+    title: String,
+    amount: String,
+) {
     ColumnFactory {
         Heading2(title)
         TextFactory(amount)()
