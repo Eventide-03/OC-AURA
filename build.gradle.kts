@@ -28,12 +28,23 @@ dependencies {
 compose.desktop {
     application {
         mainClass = "xyz.malefic.compose.MainKt"
+        jvmArgs("--enable-native-access=ALL-UNNAMED")
 
         nativeDistributions {
             targetFormats(Dmg, Msi, Deb)
             packageName = "ComposeDesktopTemplate"
             packageVersion = "1.0.0"
         }
+    }
+}
+
+kotlin {
+    jvmToolchain(17)
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 

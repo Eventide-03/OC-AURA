@@ -10,6 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import moe.tlaster.precompose.navigation.Navigator
 import xyz.malefic.compose.comps.box.BackgroundBox
+import xyz.malefic.compose.comps.text.typography.Heading1
+import xyz.malefic.compose.comps.text.typography.Heading2
 import xyz.malefic.compose.engine.factory.ButtonFactory
 import xyz.malefic.compose.engine.factory.ColumnFactory
 import xyz.malefic.compose.engine.factory.TextFactory
@@ -21,26 +23,55 @@ import xyz.malefic.ext.string.either
 
 @Composable
 fun Home(navi: Navigator) {
-    var text by remember { mutableStateOf("Hello, World 2!") }
+    var text by remember { mutableStateOf("Hello, Mobile User!") }
 
     BackgroundBox(contentAlignment = Alignment.Center) {
         ColumnFactory {
+            // Mobile app title
+            Heading1("OC AURA Mobile")
+
+            // Add some space
+            ButtonFactory { } / {} *= {
+                space(8.dp)
+            }
+
+            // Welcome message
             ButtonFactory { TextFactory(text)() } / {
-                onClick = { text = text.either("Hello, World 2!", "Hello, Desktop 2!") }
+                onClick = { text = text.either("Hello, Mobile User!", "Welcome to OC AURA!") }
+            } *= {
+                space(24.dp)
+            }
+
+            // Budget tracker button with mobile-friendly styling
+            ButtonFactory { TextFactory("Orange County Budget Tracker")() } / {
+                onClick = { navi.navigate("finance/dashboard") }
             } *= {
                 space(16.dp)
             }
-            ButtonFactory { TextFactory("Go to App1")() } / {
+
+            // Goal Tracker button
+            ButtonFactory { TextFactory("Goal Tracker")() } / {
+                onClick = { navi.navigate("goaltracker") }
+            } *= {
+                space(16.dp)
+            }
+
+            // User profile button
+            ButtonFactory { TextFactory("User Profile")() } / {
                 onClick = { navi.navigate("app1/123456") }
             } *= {
                 space(16.dp)
             }
-            ButtonFactory { TextFactory("Go to App1 But With a Name")() } / {
+
+            // Settings button
+            ButtonFactory { TextFactory("Settings")() } / {
                 onClick = { navi.navigate("app1/123456/Om Gupta") }
             } *= {
                 space(16.dp)
             }
-            ButtonFactory { TextFactory("Go to Hidden Page")() } /= {
+
+            // Hidden page button
+            ButtonFactory { TextFactory("More Options")() } /= {
                 onClick = { navi.navigate("hidden/boo!") }
             }
         } /= {

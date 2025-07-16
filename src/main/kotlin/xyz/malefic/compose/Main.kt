@@ -22,6 +22,12 @@ import xyz.malefic.compose.nav.RouteManager.navi
 import xyz.malefic.compose.nav.config.MalefiConfigLoader
 import xyz.malefic.compose.screens.App1
 import xyz.malefic.compose.screens.Home
+import xyz.malefic.compose.screens.finance.BudgetManager
+import xyz.malefic.compose.screens.finance.ExpensesTracker
+import xyz.malefic.compose.screens.finance.FinanceDashboard
+import xyz.malefic.compose.screens.finance.IncomeTracker
+import xyz.malefic.compose.screens.finance.TaxInformation
+import xyz.malefic.compose.screens.GoalTracker
 import xyz.malefic.compose.theming.MaleficTheme
 import xyz.malefic.ext.list.get
 import xyz.malefic.ext.stream.grass
@@ -81,4 +87,10 @@ val composableMap: Map<String, @Composable (List<String?>) -> Unit> =
         "App1" to { params -> App1(id = params[0]!!, name = params[1, null]) },
         "Home" to { _ -> Home(navi) },
         "Text" to { params -> Heading1(text = params[0, "Nope."]) },
+        "FinanceDashboard" to { _ -> FinanceDashboard(navi) },
+        "ExpensesTracker" to { _ -> ExpensesTracker(navi) },
+        "BudgetManager" to { _ -> BudgetManager(navi) },
+        "TaxInformation" to { _ -> TaxInformation(navi) },
+        "IncomeTracker" to { _ -> IncomeTracker(navi) },
+        "GoalTracker" to { _ -> GoalTracker(navi) },
     )

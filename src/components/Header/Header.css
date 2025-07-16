@@ -1,0 +1,28 @@
+.header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: white;
+  padding: 0.75rem 0 0.5rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+  border-bottom: none;
+  text-align: center;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.header-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo {
+  font-family: var(--font-secondary);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.04em;
+  text-shadow: 0 2px 8px rgba(58,134,255,0.10);
+  padding: 0.25rem 0;
+}
+
+/* Remove nav-links and nav-link styles */

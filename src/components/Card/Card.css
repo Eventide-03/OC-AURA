@@ -1,0 +1,35 @@
+.custom-card {
+  background-color: white;
+  border-radius: 1.2rem;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.10);
+  padding: 1.2rem;
+  margin-bottom: 1.2rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.custom-card:hover {
+  transform: scale(1.01);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+}
+
+.card-title {
+  color: var(--primary);
+  font-family: var(--font-secondary);
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-content {
+  color: var(--gray-700);
+  font-size: 1rem;
+}
+
+.card-footer {
+  margin-top: 0.8rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--gray-200);
+  display: flex;
+  justify-content: flex-end;
+}
