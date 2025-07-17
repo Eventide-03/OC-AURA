@@ -43,7 +43,9 @@ data class GoalDetails(
     val description: String,
 )
 
-class AIService(private val apiKey: String) {
+class AIService(
+    private val apiKey: String,
+) {
     private val client = OkHttpClient()
     private val json = Json { ignoreUnknownKeys = true }
     private val baseUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
@@ -51,7 +53,8 @@ class AIService(private val apiKey: String) {
     suspend fun generateGoalDetails(goalDescription: String): GoalDetails? {
         return withContext(Dispatchers.IO) {
             try {
-                val prompt = """
+                val prompt =
+                    """
                     Create a financial plan for this goal: "$goalDescription"
                     
                     Provide a JSON response with exactly this structure:
@@ -67,23 +70,27 @@ class AIService(private val apiKey: String) {
                     For example, if it's a vacation, consider flights, accommodation, food, activities, etc.
                     If it's a purchase, consider the item cost plus any additional expenses.
                     Only return the JSON, no other text.
-                """.trimIndent()
+                    """.trimIndent()
 
-                val requestBody = GeminiRequest(
-                    contents = listOf(
-                        Content(
-                            parts = listOf(Part(text = prompt))
-                        )
+                val requestBody =
+                    GeminiRequest(
+                        contents =
+                            listOf(
+                                Content(
+                                    parts = listOf(Part(text = prompt)),
+                                ),
+                            ),
                     )
-                )
 
                 val jsonBody = json.encodeToString(GeminiRequest.serializer(), requestBody)
-                val request = Request.Builder()
-                    .url(baseUrl)
-                    .addHeader("Content-Type", "application/json")
-                    .addHeader("X-goog-api-key", apiKey)
-                    .post(jsonBody.toRequestBody("application/json".toMediaType()))
-                    .build()
+                val request =
+                    Request
+                        .Builder()
+                        .url(baseUrl)
+                        .addHeader("Content-Type", "application/json")
+                        .addHeader("X-goog-api-key", apiKey)
+                        .post(jsonBody.toRequestBody("application/json".toMediaType()))
+                        .build()
 
                 val response = client.newCall(request).execute()
 
@@ -92,12 +99,13 @@ class AIService(private val apiKey: String) {
                     responseBody?.let { body ->
                         println("Gemini API Response: $body") // Debug log
                         val geminiResponse = json.decodeFromString<GeminiResponse>(body)
-                        val aiResponse = geminiResponse.candidates
-                            ?.firstOrNull()
-                            ?.content
-                            ?.parts
-                            ?.firstOrNull()
-                            ?.text
+                        val aiResponse =
+                            geminiResponse.candidates
+                                ?.firstOrNull()
+                                ?.content
+                                ?.parts
+                                ?.firstOrNull()
+                                ?.text
 
                         aiResponse?.let { responseText ->
                             println("AI Response Text: $responseText") // Debug log
