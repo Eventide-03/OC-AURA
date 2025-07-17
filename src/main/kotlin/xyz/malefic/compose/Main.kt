@@ -1,33 +1,14 @@
 package xyz.malefic.compose
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.application
 import xyz.malefic.compose.comps.precompose.NavWindow
-import xyz.malefic.compose.comps.text.typography.Heading1
-import xyz.malefic.compose.engine.factory.RowFactory
-import xyz.malefic.compose.engine.factory.div
-import xyz.malefic.compose.engine.factory.timesAssign
-import xyz.malefic.compose.engine.fuel.background
-import xyz.malefic.compose.engine.fuel.center
-import xyz.malefic.compose.engine.fuel.divide
-import xyz.malefic.compose.engine.fuel.fuel
 import xyz.malefic.compose.nav.RouteManager
 import xyz.malefic.compose.nav.RouteManager.RoutedNavHost
-import xyz.malefic.compose.nav.RouteManager.RoutedSidebar
 import xyz.malefic.compose.nav.RouteManager.navi
 import xyz.malefic.compose.nav.config.MalefiConfigLoader
-import xyz.malefic.compose.screens.App1
 import xyz.malefic.compose.screens.GoalTracker
-import xyz.malefic.compose.screens.Home
-import xyz.malefic.compose.screens.finance.BudgetManager
-import xyz.malefic.compose.screens.finance.ExpensesTracker
-import xyz.malefic.compose.screens.finance.FinanceDashboard
-import xyz.malefic.compose.screens.finance.IncomeTracker
-import xyz.malefic.compose.screens.finance.TaxInformation
 import xyz.malefic.compose.theming.MaleficTheme
 import xyz.malefic.ext.list.get
 import xyz.malefic.ext.stream.grass
@@ -40,7 +21,7 @@ import xyz.malefic.ext.stream.grass
  */
 fun main() =
     application {
-        NavWindow(onCloseRequest = ::exitApplication, title = "Compose Desktop Template") {
+        NavWindow(onCloseRequest = ::exitApplication, title = "Goal Tracker App") {
             // Initialize the route manager
             RouteManager.initialize(
                 composableMap,
@@ -62,35 +43,17 @@ fun main() =
     }
 
 /**
- * Composable function that defines the navigation menu layout. It includes a sidebar and a
- * content area separated by a divider.
+ * Composable function that defines the navigation menu layout. It shows only the GoalTracker.
  */
 @Composable
 fun NavigationMenu() {
-    RowFactory {
-        fuel { RoutedSidebar() }.divide()()
-        RoutedNavHost()
-    } / {
-        modifier = Modifier.fillMaxWidth().fillMaxHeight()
-    } *= {
-        center()
-        background()
-    }
+    RoutedNavHost()
 }
 
 /**
- * A map of composable functions used for routing. Each entry maps a route name to a composable
- * function that takes a list of parameters.
+ * A map of composable functions used for routing. Only GoalTracker is included.
  */
 val composableMap: Map<String, @Composable (List<String?>) -> Unit> =
     mapOf(
-        "App1" to { params -> App1(id = params[0]!!, name = params[1, null]) },
-        "Home" to { _ -> Home(navi) },
-        "Text" to { params -> Heading1(text = params[0, "Nope."]) },
-        "FinanceDashboard" to { _ -> FinanceDashboard(navi) },
-        "ExpensesTracker" to { _ -> ExpensesTracker(navi) },
-        "BudgetManager" to { _ -> BudgetManager(navi) },
-        "TaxInformation" to { _ -> TaxInformation(navi) },
-        "IncomeTracker" to { _ -> IncomeTracker(navi) },
         "GoalTracker" to { _ -> GoalTracker(navi) },
     )

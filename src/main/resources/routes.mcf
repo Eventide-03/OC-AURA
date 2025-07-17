@@ -1,10 +1,2 @@
 routes:
-  home* -> Home
-  app1 -> App1? [id, name?]
-  hidden -> Text? [text?]
-  finance/dashboard -> FinanceDashboard
-  finance/expenses -> ExpensesTracker
-  finance/budget -> BudgetManager
-  finance/taxes -> TaxInformation
-  finance/income -> IncomeTracker
-  goaltracker -> GoalTracker
+  goaltracker* -> GoalTracker

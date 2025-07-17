@@ -12,35 +12,76 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import moe.tlaster.precompose.navigation.Navigator
 import xyz.malefic.compose.comps.box.BackgroundBox
 import xyz.malefic.compose.comps.text.typography.Heading1
+import xyz.malefic.compose.models.Goal
+import xyz.malefic.compose.services.AIService
 
 @Composable
 fun GoalTracker(navi: Navigator) {
     var currentScreen by remember { mutableStateOf("main") }
+    var goals by remember { mutableStateOf(listOf<Goal>()) }
+    var currentGoal by remember { mutableStateOf<Goal?>(null) }
+    val geminiApiKey = "AIzaSyDHee9PL_yR_L4Lshk25u3HLBN5pEZ8fgw"
+    val aiService = remember { AIService(geminiApiKey) }
+    val coroutineScope = rememberCoroutineScope()
 
     when (currentScreen) {
         "main" ->
             MainScreen(
+                currentGoal = currentGoal,
                 onEditClick = { currentScreen = "edit" },
                 onAddClick = { currentScreen = "add" },
                 onOverviewClick = { currentScreen = "overview" },
                 onSettingsClick = { currentScreen = "settings" },
+                onUpdateAmount = { amount ->
+                    currentGoal = currentGoal?.copy(currentAmount = amount)
+                },
             )
-        "edit" -> EditGoalScreen(onBack = { currentScreen = "main" })
-        "add" -> AddGoalScreen(onBack = { currentScreen = "main" })
-        "overview" -> GoalsOverviewScreen(onBack = { currentScreen = "main" })
+        "edit" ->
+            EditGoalScreen(
+                goal = currentGoal,
+                onBack = { currentScreen = "main" },
+                onUpdateGoal = { updatedGoal ->
+                    currentGoal = updatedGoal
+                    goals = goals.map { if (it.id == updatedGoal.id) updatedGoal else it }
+                },
+            )
+        "add" ->
+            AddGoalScreen(
+                onBack = { currentScreen = "main" },
+                onAddGoal = { goal ->
+                    goals = goals + goal
+                    currentGoal = goal
+                    currentScreen = "main"
+                },
+                aiService = aiService,
+                coroutineScope = coroutineScope,
+            )
+        "overview" ->
+            GoalsOverviewScreen(
+                goals = goals,
+                onBack = { currentScreen = "main" },
+                onSelectGoal = { goal ->
+                    currentGoal = goal
+                    currentScreen = "main"
+                },
+            )
         "settings" -> SettingsScreen(onBack = { currentScreen = "main" })
     }
 }
 
 @Composable
 fun MainScreen(
+    currentGoal: Goal?,
     onEditClick: () -> Unit,
     onAddClick: () -> Unit,
     onOverviewClick: () -> Unit,
     onSettingsClick: () -> Unit,
+    onUpdateAmount: (String) -> Unit,
 ) {
     BackgroundBox(
         modifier =
@@ -55,21 +96,70 @@ fun MainScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text("Vacation 🔽", fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
-            Text("00 DAYS", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-            Text("43%", fontSize = 36.sp, fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(16.dp))
-            Column(
-                modifier =
-                    Modifier
-                        .background(Color(0xFF437D3D), shape = RoundedCornerShape(16.dp))
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text("TARGET: \$00.00", color = Color.White, fontWeight = FontWeight.Bold)
-                Text("$00.00 SAVED", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            if (currentGoal != null) {
+                Text(currentGoal.name, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+                Text("${currentGoal.getProgressPercentage()}%", fontSize = 36.sp, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(16.dp))
+                Column(
+                    modifier =
+                        Modifier
+                            .background(Color(0xFF437D3D), shape = RoundedCornerShape(16.dp))
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text("TARGET: ${currentGoal.targetAmount}", color = Color.White, fontWeight = FontWeight.Bold)
+                    Text("${currentGoal.currentAmount} SAVED", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                    Text("${currentGoal.getRemainingAmount()} REMAINING", color = Color.White, fontSize = 16.sp)
+                }
+
+                // Add amount input
+                var amountInput by remember { mutableStateOf("") }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    TextField(
+                        value = amountInput,
+                        onValueChange = { amountInput = it },
+                        label = { Text("Add amount") },
+                        modifier = Modifier.weight(1f),
+                    )
+                    Button(
+                        onClick = {
+                            if (amountInput.isNotEmpty()) {
+                                val current =
+                                    currentGoal.currentAmount
+                                        .replace("$", "")
+                                        .replace(",", "")
+                                        .toDoubleOrNull() ?: 0.0
+                                val newAmount = amountInput.toDoubleOrNull() ?: 0.0
+                                val total = current + newAmount
+                                onUpdateAmount("$${String.format("%.2f", total)}")
+                                amountInput = ""
+                            }
+                        },
+                    ) {
+                        Text("Add")
+                    }
+                }
+            } else {
+                Text("No Goal Selected", fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+                Text("0%", fontSize = 36.sp, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(16.dp))
+                Column(
+                    modifier =
+                        Modifier
+                            .background(Color(0xFF437D3D), shape = RoundedCornerShape(16.dp))
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text("TARGET: $0.00", color = Color.White, fontWeight = FontWeight.Bold)
+                    Text("$0.00 SAVED", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                }
             }
+
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = onEditClick,
@@ -104,7 +194,13 @@ fun MainScreen(
 }
 
 @Composable
-fun EditGoalScreen(onBack: () -> Unit) {
+fun EditGoalScreen(
+    goal: Goal?,
+    onBack: () -> Unit,
+    onUpdateGoal: (Goal) -> Unit,
+) {
+    var editedGoal by remember { mutableStateOf(goal) }
+
     BackgroundBox(
         modifier = Modifier.fillMaxSize().padding(24.dp),
         contentAlignment = Alignment.TopCenter,
@@ -114,16 +210,45 @@ fun EditGoalScreen(onBack: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Heading1("EDIT GOAL")
-            Text("Vacation 🔽", fontSize = 20.sp)
-            Text("Target Savings:", fontWeight = FontWeight.Bold)
-            Text("$00.00")
-            Text("Time remaining:", fontWeight = FontWeight.Bold)
-            Text("00 DAYS")
-            Text("Amount Saved:", fontWeight = FontWeight.Bold)
-            Button(onClick = {}, colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFA1D48B))) {
-                Text("$00.00")
+
+            if (editedGoal != null) {
+                Text(editedGoal!!.name, fontSize = 20.sp)
+                Text("Target Amount:", fontWeight = FontWeight.Bold)
+                Text(editedGoal!!.targetAmount)
+                Text("Current Amount:", fontWeight = FontWeight.Bold)
+                Text(editedGoal!!.currentAmount)
+                Text("Time Frame:", fontWeight = FontWeight.Bold)
+                Text(editedGoal!!.timeFrame)
+                Text("Monthly Savings:", fontWeight = FontWeight.Bold)
+                Text(editedGoal!!.monthlySavings)
+
+                // Edit current amount
+                var newAmount by remember { mutableStateOf(editedGoal!!.currentAmount) }
+                TextField(
+                    value = newAmount,
+                    onValueChange = {
+                        newAmount = it
+                        editedGoal = editedGoal?.copy(currentAmount = it)
+                    },
+                    label = { Text("Current Amount") },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                Button(
+                    onClick = {
+                        editedGoal?.let { onUpdateGoal(it) }
+                        onBack()
+                    },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFA1D48B)),
+                ) {
+                    Text("Save Changes")
+                }
             }
-            Button(onClick = onBack, colors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray)) {
+
+            Button(
+                onClick = onBack,
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray),
+            ) {
                 Text("← Back")
             }
         }
@@ -131,8 +256,15 @@ fun EditGoalScreen(onBack: () -> Unit) {
 }
 
 @Composable
-fun AddGoalScreen(onBack: () -> Unit) {
+fun AddGoalScreen(
+    onBack: () -> Unit,
+    onAddGoal: (Goal) -> Unit,
+    aiService: AIService,
+    coroutineScope: CoroutineScope,
+) {
     var goalText by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
+    var generatedDetails by remember { mutableStateOf<xyz.malefic.compose.services.GoalDetails?>(null) }
 
     BackgroundBox(
         modifier = Modifier.fillMaxSize().padding(24.dp),
@@ -151,13 +283,72 @@ fun AddGoalScreen(onBack: () -> Unit) {
                 label = { Text("Type goal here...") },
                 modifier = Modifier.fillMaxWidth().height(120.dp),
             )
-            Button(
-                onClick = {},
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFA1D48B)),
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text("CREATE GOAL")
+
+            if (isLoading) {
+                CircularProgressIndicator()
+                Text("Generating goal details with AI...")
             }
+
+            if (generatedDetails != null) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    backgroundColor = Color(0xFFE8F5E8),
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                    ) {
+                        Text("AI Generated Details:", fontWeight = FontWeight.Bold)
+                        Text("Estimated Cost: ${generatedDetails!!.estimatedCost}")
+                        Text("Target Amount: ${generatedDetails!!.targetAmount}")
+                        Text("Time Frame: ${generatedDetails!!.timeFrame}")
+                        Text("Monthly Savings: ${generatedDetails!!.monthlySavings}")
+                        Text("Description: ${generatedDetails!!.description}")
+                    }
+                }
+            }
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Button(
+                    onClick = {
+                        if (goalText.isNotEmpty()) {
+                            isLoading = true
+                            coroutineScope.launch {
+                                val details = aiService.generateGoalDetails(goalText)
+                                generatedDetails = details
+                                isLoading = false
+                            }
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF4CAF50)),
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text("Generate with AI")
+                }
+
+                Button(
+                    onClick = {
+                        if (goalText.isNotEmpty() && generatedDetails != null) {
+                            val goal =
+                                Goal(
+                                    name = goalText,
+                                    description = generatedDetails!!.description,
+                                    targetAmount = generatedDetails!!.targetAmount,
+                                    timeFrame = generatedDetails!!.timeFrame,
+                                    monthlySavings = generatedDetails!!.monthlySavings,
+                                    estimatedCost = generatedDetails!!.estimatedCost,
+                                )
+                            onAddGoal(goal)
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFA1D48B)),
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text("CREATE GOAL")
+                }
+            }
+
             Button(
                 onClick = onBack,
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray),
@@ -170,7 +361,11 @@ fun AddGoalScreen(onBack: () -> Unit) {
 }
 
 @Composable
-fun GoalsOverviewScreen(onBack: () -> Unit) {
+fun GoalsOverviewScreen(
+    goals: List<Goal>,
+    onBack: () -> Unit,
+    onSelectGoal: (Goal) -> Unit,
+) {
     BackgroundBox(
         modifier =
             Modifier
@@ -191,22 +386,38 @@ fun GoalsOverviewScreen(onBack: () -> Unit) {
                 modifier = Modifier.padding(bottom = 32.dp),
             )
 
-            listOf("Vacation", "Emergency fund", "Birthday gift").forEach {
-                Text(text = "$it:", modifier = Modifier.padding(bottom = 4.dp))
-                Box(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 20.dp)
-                            .background(Color(0xFFA9DB8E), shape = RoundedCornerShape(50))
-                            .padding(vertical = 10.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = "$00.00/$00.00",
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black,
-                    )
+            if (goals.isEmpty()) {
+                Text("No goals created yet. Add your first goal!")
+            } else {
+                goals.forEach { goal ->
+                    Card(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp),
+                        backgroundColor = Color(0xFFA9DB8E),
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                        ) {
+                            Text(
+                                text = goal.name,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                            )
+                            Text("Progress: ${goal.getProgressPercentage()}%")
+                            Text("Target: ${goal.targetAmount}")
+                            Text("Current: ${goal.currentAmount}")
+                            Text("Time Frame: ${goal.timeFrame}")
+
+                            Button(
+                                onClick = { onSelectGoal(goal) },
+                                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF437D3D)),
+                            ) {
+                                Text("Select Goal", color = Color.White)
+                            }
+                        }
+                    }
                 }
             }
 

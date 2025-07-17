@@ -181,7 +181,7 @@ The workflow will:
 
 [source]
 ----
-ComposeDesktopTemplate/
+OC-Aura/
 ├── .github/
 │   └── workflows/
 │       └── package.yml        # GitHub Actions workflow for packaging

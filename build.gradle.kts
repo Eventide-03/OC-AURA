@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlinter)
     alias(libs.plugins.compose)
+    kotlin("plugin.serialization") version "2.1.21"
 }
 
 group = "xyz.malefic.compose"
@@ -23,6 +24,13 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation(libs.bundles.malefic.ext)
     implementation(libs.precompose)
+
+    // HTTP client for API calls
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    // JSON parsing
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation("org.jetbrains.kotlin:kotlin-serialization:2.1.21")
 }
 
 compose.desktop {
@@ -32,7 +40,7 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(Dmg, Msi, Deb)
-            packageName = "ComposeDesktopTemplate"
+            packageName = "OC-Aura"
             packageVersion = "1.0.0"
         }
     }
